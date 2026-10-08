@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "vizera-app",
+    "name": "Vizera",
     "slug": "vizera-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,9 +8,11 @@
     "scheme": "vizeraapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.vizera.app"
     },
     "android": {
+      "package": "com.vizera.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -39,6 +41,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "562a0703-5518-4da7-bf64-ecb1c58f0ea8"
+      }
     }
   }
 }
