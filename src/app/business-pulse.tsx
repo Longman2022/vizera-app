@@ -1,14 +1,12 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import * as Sharing from 'expo-sharing';
 import { captureRef } from 'react-native-view-shot';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Colors, Fonts } from '@/constants/vizera-theme';
 import { PulseShareCard } from '@/components/pulse-share-card';
-import { Spacing } from '@/constants/theme';
 import { getMyPulse, getMyProfile, markConnectPromptShown, logout } from '@/lib/api';
 
 type Pulse = {
@@ -84,85 +82,95 @@ export default function BusinessPulseScreen() {
 
   if (loading) {
     return (
-      <ThemedView style={styles.container}>
+      <View style={styles.container}>
         <SafeAreaView style={styles.centered}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color={Colors.ink} />
         </SafeAreaView>
-      </ThemedView>
+      </View>
     );
   }
 
   const hasStats = pulse?.days_logged !== undefined && pulse.days_logged > 0;
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedText type="title" style={styles.title}>
-          Your Business Pulse
-        </ThemedText>
+        <Text style={styles.title}>Your Business Pulse</Text>
 
-        {!!error && <ThemedText style={styles.error}>{error}</ThemedText>}
+        {!!error && <Text style={styles.error}>{error}</Text>}
 
-        {pulse?.message && <ThemedText style={styles.message}>{pulse.message}</ThemedText>}
+        {pulse?.message && <Text style={styles.message}>{pulse.message}</Text>}
 
         {hasStats && (
-          <>
-            <ThemedView style={styles.statRow}>
-              <ThemedText style={styles.statLabel}>Days logged</ThemedText>
-              <ThemedText style={styles.statValue}>{pulse!.days_logged}</ThemedText>
-            </ThemedView>
-            <ThemedView style={styles.statRow}>
-              <ThemedText style={styles.statLabel}>Average sales</ThemedText>
-              <ThemedText style={styles.statValue}>
+          <View style={styles.ledger}>
+            <View style={styles.ledgerRow}>
+              <Text style={styles.ledgerLabel}>Days logged</Text>
+              <Text style={styles.ledgerValue}>{pulse!.days_logged}</Text>
+            </View>
+            <View style={styles.divider} />
+
+            <View style={styles.ledgerRow}>
+              <Text style={styles.ledgerLabel}>Average sales</Text>
+              <Text style={styles.ledgerValue}>
                 ₦{Number(pulse!.average_sales).toLocaleString()}
-              </ThemedText>
-            </ThemedView>
+              </Text>
+            </View>
+
             {pulse!.best_day && (
-              <ThemedView style={styles.statRow}>
-                <ThemedText style={styles.statLabel}>Best day</ThemedText>
-                <ThemedText style={styles.statValue}>
-                  ₦{pulse!.best_day.sales_amount.toLocaleString()}
-                </ThemedText>
-              </ThemedView>
+              <>
+                <View style={styles.divider} />
+                <View style={styles.ledgerRow}>
+                  <Text style={styles.ledgerLabel}>Best day</Text>
+                  <Text style={[styles.ledgerValue, styles.positive]}>
+                    ₦{pulse!.best_day.sales_amount.toLocaleString()}
+                  </Text>
+                </View>
+              </>
             )}
+
             {pulse!.worst_day && (
-              <ThemedView style={styles.statRow}>
-                <ThemedText style={styles.statLabel}>Worst day</ThemedText>
-                <ThemedText style={styles.statValue}>
-                  ₦{pulse!.worst_day.sales_amount.toLocaleString()}
-                </ThemedText>
-              </ThemedView>
+              <>
+                <View style={styles.divider} />
+                <View style={styles.ledgerRow}>
+                  <Text style={styles.ledgerLabel}>Worst day</Text>
+                  <Text style={[styles.ledgerValue, styles.negative]}>
+                    ₦{pulse!.worst_day.sales_amount.toLocaleString()}
+                  </Text>
+                </View>
+              </>
             )}
-          </>
+          </View>
         )}
 
         {pulse?.show_connect_prompt && (
-          <ThemedView style={styles.connectBox}>
-            <ThemedText style={styles.connectText}>
+          <View style={styles.connectBox}>
+            <Text style={styles.connectText}>
               Want Vizera to track this automatically? You can connect your bank or POS later.
-            </ThemedText>
+            </Text>
             <Pressable onPress={handleDismissConnectPrompt}>
-              <ThemedText style={styles.connectDismiss}>Maybe later</ThemedText>
+              <Text style={styles.connectDismiss}>Maybe later</Text>
             </Pressable>
-          </ThemedView>
+          </View>
         )}
+
+        <View style={styles.spacer} />
 
         {hasStats && (
           <Pressable style={styles.shareButton} onPress={handleShare} disabled={sharing}>
             {sharing ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={Colors.paper} />
             ) : (
-              <ThemedText style={styles.buttonText}>Share my pulse</ThemedText>
+              <Text style={styles.buttonText}>Share my pulse</Text>
             )}
           </Pressable>
         )}
 
         <Pressable style={styles.button} onPress={() => router.push('/log-activity')}>
-          <ThemedText style={styles.buttonText}>Log another day</ThemedText>
+          <Text style={styles.buttonTextDark}>Log another day</Text>
         </Pressable>
 
         <Pressable style={styles.secondaryButton} onPress={handleLogout}>
-          <ThemedText style={styles.secondaryButtonText}>Log out</ThemedText>
+          <Text style={styles.secondaryButtonText}>Log out</Text>
         </Pressable>
 
         {hasStats && (
@@ -177,13 +185,14 @@ export default function BusinessPulseScreen() {
           </View>
         )}
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.paper,
   },
   centered: {
     flex: 1,
@@ -192,68 +201,108 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    padding: Spacing.four,
-    gap: Spacing.three,
+    padding: 24,
+    gap: 16,
   },
   title: {
-    marginTop: Spacing.four,
+    fontFamily: Fonts.display,
+    fontSize: 22,
+    color: Colors.ink,
+    marginTop: 8,
   },
   message: {
-    opacity: 0.7,
+    fontFamily: Fonts.body,
+    color: Colors.inkMuted,
   },
   error: {
-    color: '#dc2626',
+    fontFamily: Fonts.body,
+    color: Colors.brick,
   },
-  statRow: {
+  ledger: {
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.hairline,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+  ledgerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.two,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    alignItems: 'center',
+    paddingVertical: 14,
   },
-  statLabel: {
-    opacity: 0.7,
+  divider: {
+    height: 1,
+    backgroundColor: Colors.hairline,
   },
-  statValue: {
-    fontWeight: '600',
+  ledgerLabel: {
+    fontFamily: Fonts.body,
+    fontSize: 15,
+    color: Colors.inkMuted,
+  },
+  ledgerValue: {
+    fontFamily: Fonts.bodyBold,
+    fontSize: 16,
+    color: Colors.ink,
+  },
+  positive: {
+    color: Colors.growth,
+  },
+  negative: {
+    color: Colors.brick,
   },
   connectBox: {
-    backgroundColor: '#eff6ff',
-    borderRadius: 10,
-    padding: Spacing.three,
-    gap: Spacing.two,
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.hairline,
+    borderRadius: 8,
+    padding: 16,
+    gap: 8,
   },
   connectText: {
-    color: '#1e3a8a',
+    fontFamily: Fonts.body,
+    color: Colors.ink,
   },
   connectDismiss: {
-    color: '#2563eb',
-    fontWeight: '600',
+    fontFamily: Fonts.bodyBold,
+    color: Colors.gold,
+  },
+  spacer: {
+    flex: 1,
   },
   shareButton: {
-    backgroundColor: '#1e3a8a',
-    paddingVertical: Spacing.three,
-    borderRadius: 12,
+    backgroundColor: Colors.gold,
+    paddingVertical: 16,
+    borderRadius: 8,
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#2563eb',
-    paddingVertical: Spacing.three,
-    borderRadius: 12,
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.hairline,
+    paddingVertical: 16,
+    borderRadius: 8,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    fontFamily: Fonts.bodyBold,
+    color: Colors.ink,
+    fontSize: 16,
+  },
+  buttonTextDark: {
+    fontFamily: Fonts.bodyBold,
+    color: Colors.ink,
     fontSize: 16,
   },
   secondaryButton: {
-    paddingVertical: Spacing.three,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   secondaryButtonText: {
-    color: '#dc2626',
-    fontWeight: '600',
+    fontFamily: Fonts.bodyBold,
+    color: Colors.brick,
+    fontSize: 15,
   },
   offscreen: {
     position: 'absolute',

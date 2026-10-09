@@ -1,6 +1,8 @@
 import { forwardRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
+import { Colors, Fonts } from '@/constants/vizera-theme';
+
 type PulseShareCardProps = {
   businessName: string;
   averageSales: number;
@@ -13,6 +15,7 @@ export const PulseShareCard = forwardRef<View, PulseShareCardProps>(
     return (
       <View ref={ref} style={styles.card} collapsable={false}>
         <Text style={styles.brand}>VIZERA</Text>
+        <View style={styles.rule} />
         <Text style={styles.businessName}>{businessName}</Text>
 
         <View style={styles.statBlock}>
@@ -25,6 +28,7 @@ export const PulseShareCard = forwardRef<View, PulseShareCardProps>(
             <Text style={styles.smallStatValue}>{daysLogged}</Text>
             <Text style={styles.smallStatLabel}>days tracked</Text>
           </View>
+          <View style={styles.divider} />
           <View style={styles.smallStat}>
             <Text style={styles.smallStatValue}>₦{bestDaySales.toLocaleString()}</Text>
             <Text style={styles.smallStatLabel}>best day</Text>
@@ -40,22 +44,29 @@ export const PulseShareCard = forwardRef<View, PulseShareCardProps>(
 const styles = StyleSheet.create({
   card: {
     width: 320,
-    backgroundColor: '#1e3a8a',
-    borderRadius: 20,
-    padding: 24,
+    backgroundColor: Colors.ink,
+    borderRadius: 16,
+    paddingVertical: 32,
+    paddingHorizontal: 28,
     alignItems: 'center',
     gap: 16,
   },
   brand: {
-    color: '#93c5fd',
-    fontWeight: '800',
-    fontSize: 14,
-    letterSpacing: 4,
+    fontFamily: Fonts.display,
+    color: Colors.paper,
+    fontSize: 16,
+    letterSpacing: 3,
+  },
+  rule: {
+    width: 32,
+    height: 2,
+    backgroundColor: Colors.gold,
+    borderRadius: 2,
   },
   businessName: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 20,
+    fontFamily: Fonts.bodyBold,
+    color: Colors.paper,
+    fontSize: 16,
     textAlign: 'center',
   },
   statBlock: {
@@ -63,36 +74,48 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   statValue: {
-    color: '#fff',
-    fontWeight: '800',
-    fontSize: 36,
+    fontFamily: Fonts.display,
+    color: Colors.gold,
+    fontSize: 32,
   },
   statLabel: {
-    color: '#bfdbfe',
-    fontSize: 13,
-    marginTop: 4,
+    fontFamily: Fonts.body,
+    color: Colors.paper,
+    opacity: 0.7,
+    fontSize: 12,
+    marginTop: 6,
   },
   row: {
     flexDirection: 'row',
-    gap: 32,
+    alignItems: 'center',
+    gap: 24,
     marginTop: 8,
   },
   smallStat: {
     alignItems: 'center',
   },
+  divider: {
+    width: 1,
+    height: 28,
+    backgroundColor: Colors.paper,
+    opacity: 0.2,
+  },
   smallStatValue: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 18,
+    fontFamily: Fonts.bodyBold,
+    color: Colors.paper,
+    fontSize: 16,
   },
   smallStatLabel: {
-    color: '#bfdbfe',
-    fontSize: 12,
+    fontFamily: Fonts.body,
+    color: Colors.paper,
+    opacity: 0.6,
+    fontSize: 11,
     marginTop: 2,
   },
   footer: {
-    color: '#93c5fd',
+    fontFamily: Fonts.body,
+    color: Colors.gold,
     fontSize: 11,
-    marginTop: 12,
+    marginTop: 8,
   },
 });

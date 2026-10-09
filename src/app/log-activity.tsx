@@ -1,11 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, TextInput } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Colors, Fonts } from '@/constants/vizera-theme';
 import { logVoiceActivity } from '@/lib/api';
 
 export default function LogActivityScreen() {
@@ -30,111 +28,119 @@ export default function LogActivityScreen() {
       const activity = await logVoiceActivity(transcript);
       setResult({ sales_amount: activity.sales_amount, expenses: activity.expenses });
     } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      setError(err.message || 'Something went wrong. Try again.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedText type="title" style={styles.title}>
-          What happened today?
-        </ThemedText>
-        <ThemedText style={styles.subtitle}>
-          Tell us about your sales and expenses, in your own words.
-        </ThemedText>
+        <Text style={styles.title}>What happened today?</Text>
+        <Text style={styles.subtitle}>Tell us about your sales and expenses, in your own words.</Text>
 
         <TextInput
           style={styles.textArea}
           placeholder="e.g. made 15k today, spent 3k on supplies"
-          placeholderTextColor="#999"
+          placeholderTextColor={Colors.inkMuted}
           value={transcript}
           onChangeText={setTranscript}
           multiline
           numberOfLines={4}
         />
 
-        {!!error && <ThemedText style={styles.error}>{error}</ThemedText>}
+        {!!error && <Text style={styles.error}>{error}</Text>}
 
         {result && (
-          <ThemedView style={styles.resultBox}>
-            <ThemedText style={styles.resultText}>
+          <View style={styles.resultBox}>
+            <Text style={styles.resultText}>
               Logged: ₦{result.sales_amount.toLocaleString()} sales, ₦
               {result.expenses.toLocaleString()} expenses
-            </ThemedText>
-          </ThemedView>
+            </Text>
+          </View>
         )}
 
         <Pressable style={styles.button} onPress={handleSubmit} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <ThemedText style={styles.buttonText}>Log it</ThemedText>}
+          {loading ? <ActivityIndicator color={Colors.paper} /> : <Text style={styles.buttonText}>Log it</Text>}
         </Pressable>
 
         {result && (
           <Pressable style={styles.secondaryButton} onPress={() => router.push('/business-pulse')}>
-            <ThemedText style={styles.secondaryButtonText}>See my business pulse</ThemedText>
+            <Text style={styles.secondaryButtonText}>See my business pulse</Text>
           </Pressable>
         )}
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.paper,
   },
   safeArea: {
     flex: 1,
-    padding: Spacing.four,
-    gap: Spacing.three,
+    padding: 24,
+    gap: 16,
   },
   title: {
-    marginTop: Spacing.four,
+    fontFamily: Fonts.display,
+    fontSize: 22,
+    color: Colors.ink,
+    marginTop: 24,
   },
   subtitle: {
-    opacity: 0.7,
+    fontFamily: Fonts.body,
+    fontSize: 15,
+    color: Colors.inkMuted,
   },
   textArea: {
+    backgroundColor: Colors.white,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    padding: Spacing.three,
+    borderColor: Colors.hairline,
+    borderRadius: 8,
+    padding: 16,
+    fontFamily: Fonts.body,
     fontSize: 16,
+    color: Colors.ink,
     minHeight: 120,
     textAlignVertical: 'top',
   },
   error: {
-    color: '#dc2626',
+    fontFamily: Fonts.body,
+    color: Colors.brick,
   },
   resultBox: {
-    backgroundColor: '#dcfce7',
-    borderRadius: 10,
-    padding: Spacing.three,
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.growth,
+    borderRadius: 8,
+    padding: 16,
   },
   resultText: {
-    color: '#166534',
-    fontWeight: '600',
+    fontFamily: Fonts.bodyBold,
+    color: Colors.growth,
   },
   button: {
-    backgroundColor: '#2563eb',
-    paddingVertical: Spacing.three,
-    borderRadius: 12,
+    backgroundColor: Colors.ink,
+    paddingVertical: 16,
+    borderRadius: 8,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    fontFamily: Fonts.bodyBold,
+    color: Colors.paper,
     fontSize: 16,
   },
   secondaryButton: {
-    paddingVertical: Spacing.three,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   secondaryButtonText: {
-    color: '#2563eb',
-    fontWeight: '600',
+    fontFamily: Fonts.bodyBold,
+    color: Colors.gold,
     fontSize: 16,
   },
 });

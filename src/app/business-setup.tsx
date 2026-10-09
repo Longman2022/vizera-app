@@ -1,11 +1,9 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, TextInput, ScrollView, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Colors, Fonts } from '@/constants/vizera-theme';
 import { signup, login } from '@/lib/api';
 
 const PAYMENT_OPTIONS = ['cash', 'transfer', 'pos'];
@@ -33,7 +31,7 @@ export default function BusinessSetupScreen() {
     setError('');
 
     if (!businessName || !email || !password || !merchantType || !location || !yearsOperating) {
-      setError('Please fill in all fields.');
+      setError('Fill in every field to continue.');
       return;
     }
 
@@ -54,31 +52,29 @@ export default function BusinessSetupScreen() {
 
       router.replace('/log-activity');
     } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      setError(err.message || 'Something went wrong. Try again.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <ThemedText type="title" style={styles.title}>
-            Tell us about your business
-          </ThemedText>
+          <Text style={styles.title}>Tell us about your business</Text>
 
           <TextInput
             style={styles.input}
             placeholder="Business name"
-            placeholderTextColor="#999"
+            placeholderTextColor={Colors.inkMuted}
             value={businessName}
             onChangeText={setBusinessName}
           />
           <TextInput
             style={styles.input}
             placeholder="Email"
-            placeholderTextColor="#999"
+            placeholderTextColor={Colors.inkMuted}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -87,7 +83,7 @@ export default function BusinessSetupScreen() {
           <TextInput
             style={styles.input}
             placeholder="Password"
-            placeholderTextColor="#999"
+            placeholderTextColor={Colors.inkMuted}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -95,124 +91,131 @@ export default function BusinessSetupScreen() {
           <TextInput
             style={styles.input}
             placeholder="What do you sell? (e.g. cosmetics, fashion)"
-            placeholderTextColor="#999"
+            placeholderTextColor={Colors.inkMuted}
             value={merchantType}
             onChangeText={setMerchantType}
           />
           <TextInput
             style={styles.input}
             placeholder="Location (e.g. Lagos)"
-            placeholderTextColor="#999"
+            placeholderTextColor={Colors.inkMuted}
             value={location}
             onChangeText={setLocation}
           />
           <TextInput
             style={styles.input}
             placeholder="Years operating"
-            placeholderTextColor="#999"
+            placeholderTextColor={Colors.inkMuted}
             value={yearsOperating}
             onChangeText={setYearsOperating}
             keyboardType="number-pad"
           />
 
-          <ThemedText style={styles.label}>How do customers pay you?</ThemedText>
-          <ThemedView style={styles.chipRow}>
+          <Text style={styles.label}>How do customers pay you?</Text>
+          <View style={styles.chipRow}>
             {PAYMENT_OPTIONS.map((method) => (
               <Pressable
                 key={method}
                 onPress={() => togglePaymentMethod(method)}
-                style={[
-                  styles.chip,
-                  paymentMethods.includes(method) && styles.chipSelected,
-                ]}
+                style={[styles.chip, paymentMethods.includes(method) && styles.chipSelected]}
               >
-                <ThemedText
-                  style={[
-                    styles.chipText,
-                    paymentMethods.includes(method) && styles.chipTextSelected,
-                  ]}
+                <Text
+                  style={[styles.chipText, paymentMethods.includes(method) && styles.chipTextSelected]}
                 >
                   {method}
-                </ThemedText>
+                </Text>
               </Pressable>
             ))}
-          </ThemedView>
+          </View>
 
-          {!!error && <ThemedText style={styles.error}>{error}</ThemedText>}
+          {!!error && <Text style={styles.error}>{error}</Text>}
 
           <Pressable style={styles.button} onPress={handleSubmit} disabled={loading}>
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={Colors.paper} />
             ) : (
-              <ThemedText style={styles.buttonText}>Continue</ThemedText>
+              <Text style={styles.buttonText}>Continue</Text>
             )}
           </Pressable>
         </ScrollView>
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.paper,
   },
   safeArea: {
     flex: 1,
   },
   scrollContent: {
-    padding: Spacing.four,
-    gap: Spacing.three,
+    padding: 24,
+    gap: 16,
   },
   title: {
-    marginBottom: Spacing.two,
+    fontFamily: Fonts.display,
+    fontSize: 22,
+    color: Colors.ink,
+    marginBottom: 8,
   },
   input: {
+    backgroundColor: Colors.white,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
+    borderColor: Colors.hairline,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontFamily: Fonts.body,
     fontSize: 16,
+    color: Colors.ink,
   },
   label: {
-    marginTop: Spacing.two,
+    fontFamily: Fonts.bodyMedium,
+    color: Colors.ink,
+    marginTop: 8,
   },
   chipRow: {
     flexDirection: 'row',
-    gap: Spacing.two,
+    gap: 8,
     flexWrap: 'wrap',
   },
   chip: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: Colors.hairline,
     borderRadius: 20,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: Colors.white,
   },
   chipSelected: {
-    backgroundColor: '#2563eb',
-    borderColor: '#2563eb',
+    backgroundColor: Colors.ink,
+    borderColor: Colors.ink,
   },
   chipText: {
+    fontFamily: Fonts.body,
+    color: Colors.ink,
     textTransform: 'capitalize',
   },
   chipTextSelected: {
-    color: '#fff',
+    color: Colors.paper,
   },
   error: {
-    color: '#dc2626',
+    fontFamily: Fonts.body,
+    color: Colors.brick,
   },
   button: {
-    backgroundColor: '#2563eb',
-    paddingVertical: Spacing.three,
-    borderRadius: 12,
+    backgroundColor: Colors.ink,
+    paddingVertical: 16,
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: Spacing.two,
+    marginTop: 8,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    fontFamily: Fonts.bodyBold,
+    color: Colors.paper,
     fontSize: 16,
   },
 });
