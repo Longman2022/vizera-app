@@ -15,6 +15,21 @@ export async function clearToken() {
   await SecureStore.deleteItemAsync(TOKEN_KEY);
 }
 
+function extractErrorMessage(detail: any, status: number): string {
+  if (typeof detail === "string") {
+    return detail;
+  }
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => (item && typeof item === "object" ? item.msg || JSON.stringify(item) : String(item)))
+      .join(", ");
+  }
+  if (detail && typeof detail === "object") {
+    return detail.msg || JSON.stringify(detail);
+  }
+  return `Request failed with status ${status}`;
+}
+
 async function request(path: string, options: RequestInit = {}) {
   const token = await getToken();
 
@@ -35,8 +50,7 @@ async function request(path: string, options: RequestInit = {}) {
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
-    const message = data?.detail || `Request failed with status ${response.status}`;
-    throw new Error(message);
+    throw new Error(extractErrorMessage(data?.detail, response.status));
   }
 
   return data;
@@ -44,13 +58,10 @@ async function request(path: string, options: RequestInit = {}) {
 
 export type MerchantSignup = {
   business_name: string;
-  email: string;
+  email?: string;
+  phone_number?: string;
   password: string;
   consent_given: boolean;
-  merchant_type: string;
-  location: string;
-  years_operating: number;
-  payment_methods: string[];
 };
 
 export async function signup(data: MerchantSignup) {
@@ -60,13 +71,27 @@ export async function signup(data: MerchantSignup) {
   });
 }
 
-export async function login(email: string, password: string) {
+export async function login(identifier: string, password: string) {
   const data = await request("/merchants/login", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ identifier, password }),
   });
   await saveToken(data.access_token);
   return data;
+}
+
+export type MerchantProfile = {
+  merchant_type: string;
+  location: string;
+  years_operating: number;
+  payment_methods: string[];
+};
+
+export async function completeProfile(data: MerchantProfile) {
+  return request("/merchants/me/profile", {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
 }
 
 export async function getMyProfile() {
